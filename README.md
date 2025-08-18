@@ -1,2 +1,2 @@
-# JJdurant
-landy is gay
+# 1
+landy love ziki
