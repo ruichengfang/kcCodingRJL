@@ -1,2 +1,1 @@
-# 1
-landy love ziki
+##### Landy is gay!!
