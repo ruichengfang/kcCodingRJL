@@ -1,0 +1,36 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot;
+
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.drive;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+/**
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and trigger mappings) should be declared here.
+ */
+public class RobotContainer {
+
+  private final drive test_drive = new drive();
+
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
+  public RobotContainer() {
+    configureBindings();
+  }
+
+  private void configureBindings() {
+    m_driverController.a().whileTrue(test_drive.motorCommand1(2));
+    //m_driverController.a().whileTrue(test_drive.motorCommand2(2));
+    m_driverController.x().onTrue(test_drive.motorCommand(2));
+    m_driverController.y().onTrue(test_drive.motorCommand(0));
+  }  
+
+}
