@@ -1,2 +1,2 @@
 # 1
-landy love ziki
+you love ziki
