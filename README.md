@@ -1,1 +1,1 @@
-##### Landy is gay!!
+##### Ziki is gay!!
