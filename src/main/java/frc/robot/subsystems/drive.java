@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -17,11 +18,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drive extends SubsystemBase {
 
-  private final TalonFX m_test_motor = new TalonFX(1, "rio");
+  private final TalonFX m_test_motor = new TalonFX(11, "rio");
   private final TalonFX m_test_motor2 = new TalonFX(2, "rio");
   private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
   private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
-  private final VoltageOut m_test_motor_request = new VoltageOut(0.0);
+  private final VelocityTorqueCurrentFOC m_test_motor_request = new VelocityTorqueCurrentFOC(0);
 
 //实际控制
 //封装出来的方法
@@ -32,27 +33,26 @@ public class Drive extends SubsystemBase {
 //withPosition()能够将高级的控制请求和底层的位置控制建立联系
 //withVelocity()能够将高级的控制请求和底层的速度控制建立联系
 
-  public void setmotorVoltage(double vol) {
-    m_test_motor.setControl(m_test_motor_request.withOutput(vol));
-    m_test_motor2.setControl(m_test_motor_request.withOutput(vol));
+  public void setmotorVelocity(double vol) {
+    m_test_motor.setControl(m_test_motor_request.withVelocity(vol));
+    m_test_motor2.setControl(m_test_motor_request.withVelocity(vol));
   }
 
-  public void setmotorVoltage2(double vol) {
-    m_test_motor3.setControl(m_test_motor_request.withOutput(vol));
-    m_test_motor4.setControl(m_test_motor_request.withOutput(vol));
+  public void setmotorVelocity2(double vol) {
+    m_test_motor.setControl(m_test_motor_request.withVelocity(vol));
   }
 
-  public Command Motor_Voltage_Command(double voltage){
+  public Command Motor_Velocity_Command(double Velocity){
     return run(()->{
-      setmotorVoltage(voltage); // Set the motor to move at 1000 units per second
+      setmotorVelocity(Velocity); // Set the motor to move at 1000 units per second
     });
   }
-  public Command Motor_Voltage_Command2(double voltage){
+  public Command Motor_Velocity_Command2(double Velocity){
     return runEnd( ()->{
-                          setmotorVoltage2(voltage); // Set the motor to move at 1000 units per second
+                          setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
                        },
                   ()->{
-                          setmotorVoltage2(0); // Set the motor to move at 1000 units per second
+                          setmotorVelocity2(0); // Set the motor to move at 1000 units per second
                       });
         }
   // public Command Motor_Voltage_Command2(double voltage){
@@ -64,12 +64,12 @@ public class Drive extends SubsystemBase {
   public Drive() {
       var motorConfigs = new TalonFXConfiguration();
 
-      motorConfigs.Slot0.kS = 0.2;
+      motorConfigs.Slot0.kS = 1.85;
       motorConfigs.Slot0.kV = 0.0;
       motorConfigs.Slot0.kA = 0;
-      motorConfigs.Slot0.kP = 3;
+      motorConfigs.Slot0.kP = 6;
       motorConfigs.Slot0.kI = 0;
-      motorConfigs.Slot0.kD = 0;
+      motorConfigs.Slot0.kD = 0.1;
       motorConfigs.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
       motorConfigs.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
       motorConfigs.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
