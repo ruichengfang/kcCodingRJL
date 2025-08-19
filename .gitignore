@@ -3,11 +3,11 @@
 
 ### C++ ###
 # Prerequisites
-*.d
+&.d
 
 # Compiled Object files
-*.slo
-*.lo
+&.slo
+&.lo
 *.o
 *.obj
 
