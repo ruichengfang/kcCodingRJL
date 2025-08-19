@@ -73,11 +73,10 @@ public class RobotContainer {
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-    m_driverController.b().whileTrue(m_ExampleDriveSystem.motorB_Voltage_Command(2));
-    m_driverController.b().whileFalse(m_ExampleDriveSystem.motorB_Voltage_Command(0));
+    m_driverController.b().whileTrue(m_ExampleDriveSystem.motor_Velocity_Command(50));
 
-    m_driverController.a().onTrue(m_ExampleDriveSystem.motorA_Voltage_Command(2));
-    m_driverController.x().onFalse(m_ExampleDriveSystem.motorA_Voltage_Command(0));
+    m_driverController.a().onTrue(m_ExampleDriveSystem.motorA_Velocity_Command(2));
+    m_driverController.x().onFalse(m_ExampleDriveSystem.motorA_Velocity_Command(0));
     //m_driverController.b().whileFalse(m_ExampleDriveSystem.motor_Voltage_Command(0));
     //xBoxController + 按键 = Trigger
   }
