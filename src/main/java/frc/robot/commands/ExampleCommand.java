@@ -35,9 +35,14 @@
 //   @Override
 //   public void end(boolean interrupted) {}
 
+// //command的生命周期
+
 //   // Returns true when the command should end.
 //   @Override
 //   public boolean isFinished() {
 //     return false;
 //   }
 // }
+
+// //可以涉及到多个子系统，实际上是在组合简单的command
+
