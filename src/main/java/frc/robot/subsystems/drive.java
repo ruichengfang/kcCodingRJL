@@ -18,11 +18,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drive extends SubsystemBase {
 
-  private final TalonFX m_test_motor = new TalonFX(11, "rio");
+  private final TalonFX m_test_motor = new TalonFX(1, "rio");
   private final TalonFX m_test_motor2 = new TalonFX(2, "rio");
   private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
   private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
-  private final VelocityTorqueCurrentFOC m_test_motor_request = new VelocityTorqueCurrentFOC(0);
+  private final MotionMagicVoltage m_test_motor_request = new MotionMagicVoltage(0);
 
 //实际控制
 //封装出来的方法
@@ -33,26 +33,25 @@ public class Drive extends SubsystemBase {
 //withPosition()能够将高级的控制请求和底层的位置控制建立联系
 //withVelocity()能够将高级的控制请求和底层的速度控制建立联系
 
-  public void setmotorVelocity(double vol) {
-    m_test_motor.setControl(m_test_motor_request.withVelocity(vol));
-    m_test_motor2.setControl(m_test_motor_request.withVelocity(vol));
+  public void setmotorPosition(double pos) {
+    m_test_motor.setControl(m_test_motor_request.withPosition(pos));
   }
 
-  public void setmotorVelocity2(double vol) {
-    m_test_motor.setControl(m_test_motor_request.withVelocity(vol));
+  public void setmotorPosition2(double pos) {
+    m_test_motor.setControl(m_test_motor_request.withPosition(pos));
   }
 
-  public Command Motor_Velocity_Command(double Velocity){
-    return run(()->{
-      setmotorVelocity(Velocity); // Set the motor to move at 1000 units per second
+  public Command Motor_Velocity_Command(double Positon){
+    return runOnce(()->{
+      setmotorPosition(Positon); // Set the motor to move at 1000 units per second
     });
   }
-  public Command Motor_Velocity_Command2(double Velocity){
+  public Command Motor_Velocity_Command2(double Position){
     return runEnd( ()->{
-                          setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
+                          setmotorPosition2(Position); // Set the motor to move at 1000 units per second
                        },
                   ()->{
-                          setmotorVelocity2(0); // Set the motor to move at 1000 units per second
+                          setmotorPosition2(0); // Set the motor to move at 1000 units per second
                       });
         }
   // public Command Motor_Voltage_Command2(double voltage){
@@ -64,7 +63,7 @@ public class Drive extends SubsystemBase {
   public Drive() {
       var motorConfigs = new TalonFXConfiguration();
 
-      motorConfigs.Slot0.kS = 1.85;
+      motorConfigs.Slot0.kS = 1.4;
       motorConfigs.Slot0.kV = 0.0;
       motorConfigs.Slot0.kA = 0;
       motorConfigs.Slot0.kP = 6;
