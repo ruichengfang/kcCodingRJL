@@ -4,11 +4,15 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +27,26 @@ public class Drive extends SubsystemBase {
   private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
   private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
   private final MotionMagicVoltage m_test_motor_request = new MotionMagicVoltage(0);
+
+  private final CANcoder cancoder_fl = new CANcoder(1,"rio");
+
+//定义预期位置
+double expected_position = 50.0;
+
+//定义现在的位置
+double current_position = 0.0;
+
+double error = 1.0;
+
+//如何判断电机到达位置
+//if(电机位置==多少){
+//  执行的操作
+//}
+
+//区间
+//error
+//电机位置和实际位置的误差
+//误差一定范围，就认为到位了
 
 //实际控制
 //封装出来的方法
@@ -41,10 +65,27 @@ public class Drive extends SubsystemBase {
     m_test_motor.setControl(m_test_motor_request.withPosition(pos));
   }
 
-  public Command Motor_Velocity_Command(double Positon){
+public boolean isAtPosition(){
+  current_position = m_test_motor.getPosition().getValueAsDouble();
+  return Math.abs(expected_position - current_position) <= error;
+}
+
+//andThen()
+//until()
+//run()
+//runOnce()
+//runEnd()
+
+//小的command组合成大的command
+
+//whileTrue
+//onTrue
+
+
+  public Command Motor_Position_Command(double Positon){
     return runOnce(()->{
-      setmotorPosition(Positon); // Set the motor to move at 1000 units per second
-    });
+                          setmotorPosition(Positon); // Set the motor to move at 1000 units per second
+                        }).until(()->isAtPosition());
   }
   public Command Motor_Velocity_Command2(double Position){
     return runEnd( ()->{
@@ -63,6 +104,17 @@ public class Drive extends SubsystemBase {
   public Drive() {
       var motorConfigs = new TalonFXConfiguration();
 
+      //CANcoder配置
+      var motorEncoderConfigs = new CANcoderConfiguration();
+      motorEncoderConfigs.MagnetSensor.MagnetOffset=0.0; //offset
+      motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;//实际生活中的电机位置映射的什么范围
+      motorEncoderConfigs.MagnetSensor.SensorDirection=SensorDirectionValue.Clockwise_Positive;
+      motorConfigs.Feedback.RotorToSensorRatio = 13;
+      cancoder_fl.getConfigurator().apply(motorEncoderConfigs);
+
+      //少了一环：电机和cancoder建立联系
+
+
       motorConfigs.Slot0.kS = 1.4;
       motorConfigs.Slot0.kV = 0.0;
       motorConfigs.Slot0.kA = 0;
@@ -75,10 +127,16 @@ public class Drive extends SubsystemBase {
       motorConfigs.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
       motorConfigs.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
 
+      //建立电机与cancoder的联系
+      motorConfigs.Feedback.FeedbackRemoteSensorID = cancoder_fl.getDeviceID();
+      motorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+
       m_test_motor.getConfigurator().apply(motorConfigs);
       m_test_motor2.getConfigurator().apply(motorConfigs);
       m_test_motor3.getConfigurator().apply(motorConfigs);
       m_test_motor4.getConfigurator().apply(motorConfigs);
+
+
   }
 
 
