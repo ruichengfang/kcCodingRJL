@@ -27,12 +27,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    m_driverController.a().onTrue(test_drive.setpositionCommand(50)
-        .andThen(test_candleSystem.setAnimateFire()));
-    m_driverController.b().onTrue(test_drive.setpositionCommand(0)
-        .andThen(test_candleSystem.setAnimatesetall()));
-    m_driverController.x().onTrue(test_drive.setpositionCommand(10));
-    m_driverController.y().onTrue(test_drive.setpositionCommand(0));
-  }  
+    m_driverController.a().onTrue(test_drive.homeworkCommand(10)
+        .andThen(test_candleSystem.setAnimateFire())
+        .andThen(test_drive.setvelocityCommand(0)));
+    m_driverController.b().onTrue(test_drive.homeworkCommand(0)
+        .andThen(test_candleSystem.setAnimateLarson())
+        .andThen(test_drive.setvelocityCommand(0)));
+  }
 
 }

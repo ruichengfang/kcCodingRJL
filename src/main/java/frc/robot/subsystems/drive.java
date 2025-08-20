@@ -27,7 +27,7 @@ import frc.robot.Constants;
 @SuppressWarnings("unused")
 public class drive extends SubsystemBase {
   private final TalonFX test_motor1 = new TalonFX(Constants.Drive.motor1ID, "rio");
-  //private final TalonFX test_motor2 = new TalonFX(Constants.Drive.motor2ID, "rio");
+  private final TalonFX test_motor2 = new TalonFX(Constants.Drive.motor2ID, "rio");
   // private final TalonFX test_motor3 = new TalonFX(Constants.Drive.motor3ID, "rio");
   // private final TalonFX test_motor4 = new TalonFX(Constants.Drive.motor4ID, "rio");
   private final VoltageOut drive_request = new VoltageOut(0.0);
@@ -58,8 +58,8 @@ public class drive extends SubsystemBase {
     //test_motor4.setControl(position_request.withPosition(position));
   }
   public void setvelocity(double velocity){
-    test_motor1.setControl(velocity_request.withVelocity(velocity));
-    //test_motor2.setControl(velocity_request.withPosition(velocity));
+    //test_motor1.setControl(velocity_request.withVelocity(velocity));
+    test_motor2.setControl(velocity_request.withVelocity(velocity));
     //test_motor3.setControl(velocity_request.withPosition(velocity));
     //test_motor4.setControl(velocity_request.withPosition(velocity));
   }
@@ -101,8 +101,20 @@ public class drive extends SubsystemBase {
     motorConfigs.Feedback.RotorToSensorRatio = 13;
 
     test_motor1.getConfigurator().apply(motorConfigs);
-    // test_motor2.getConfigurator().apply(motorConfigs);
-    // test_motor3.getConfigurator().apply(motorConfigs);
+
+    var motorConfigs2 = new TalonFXConfiguration();
+    motorConfigs2.Slot0.kS = 1.6;
+    motorConfigs2.Slot0.kV = 0.17;
+    motorConfigs2.Slot0.kA = 0;
+    motorConfigs2.Slot0.kP = 7;
+    motorConfigs2.Slot0.kI = 0;
+    motorConfigs2.Slot0.kD = 0;
+    
+    motorConfigs2.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    motorConfigs2.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+
+    test_motor2.getConfigurator().apply(motorConfigs2);
+    // test_motor3.getConfigurator().apply(motorConfig  s);
     // test_motor4.getConfigurator().apply(motorConfigs);
 
   }
@@ -139,11 +151,14 @@ public class drive extends SubsystemBase {
       setVoltage2(voltage);
     });
   }
-  public Command setpositionCommand(double position){
+
+  public Command homeworkCommand(double position){
     return run(()-> {
       setposition(position);
+      setvelocity(10);
     }).until(() -> isreach(position, 0.1));
   }
+
   public Command setpositionCommand2(double position){
     return runEnd(() -> {
       setposition(position);
@@ -152,10 +167,8 @@ public class drive extends SubsystemBase {
     });
   }
   public Command setvelocityCommand(double velocity){
-    return runEnd(() -> {
+    return runOnce(() ->{
       setvelocity(velocity);
-    }, () -> {
-      setvelocity(0.0);
     });
   }
   

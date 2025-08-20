@@ -198,9 +198,9 @@ public class CANdleSystem extends SubsystemBase {
             changeAnimation(AnimationTypes.Rainbow);
         });
     }
-    public Command setAnimatesetall() {
+    public Command setAnimateLarson() {
         return runOnce(() -> {
-            changeAnimation(AnimationTypes.SetAll);
+            changeAnimation(AnimationTypes.Larson);
         });
     }
 }
