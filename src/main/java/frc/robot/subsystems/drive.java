@@ -20,6 +20,8 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+@SuppressWarnings("unused")
+
 public class drive extends SubsystemBase {
   private final TalonFX test_motor1 = new TalonFX(11, "rio");
   private final TalonFX test_motor2 = new TalonFX(2, "rio");
