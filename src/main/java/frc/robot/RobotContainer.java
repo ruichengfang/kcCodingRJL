@@ -31,6 +31,8 @@ public class RobotContainer {
         .andThen(test_candleSystem.setAnimateFire()));
     m_driverController.b().onTrue(test_drive.setpositionCommand(0)
         .andThen(test_candleSystem.setAnimatesetall()));
+    m_driverController.x().onTrue(test_drive.setpositionCommand(10));
+    m_driverController.y().onTrue(test_drive.setpositionCommand(0));
   }  
 
 }

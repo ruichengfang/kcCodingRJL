@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -33,8 +35,8 @@ public class drive extends SubsystemBase {
   private final VoltageOut drive_request3 = new VoltageOut(0.0);
   private final VoltageOut drive_request4 = new VoltageOut(0.0);
 
-  
-  //private final CANcoder motor_encoder = new CANcoder(4, "rio");
+  private final CANcoder test_cancoder1 = new CANcoder(Constants.Drive.cancoder1ID, "rio");
+
   private final MotionMagicVoltage position_request = new MotionMagicVoltage(0.0).withSlot(0);
   private final VelocityTorqueCurrentFOC velocity_request = new VelocityTorqueCurrentFOC(0.0);
 
@@ -62,10 +64,10 @@ public class drive extends SubsystemBase {
   public drive() {
     var motorEncoderConfigs = new CANcoderConfiguration();
     motorEncoderConfigs.MagnetSensor.MagnetOffset=0.0;//offset
-    motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;
+    motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;//电机180°对应范围
     motorEncoderConfigs.MagnetSensor.SensorDirection=SensorDirectionValue.Clockwise_Positive;
 
-    //motor_encoder.getConfigurator().apply(motorEncoderConfigs);
+    test_cancoder1.getConfigurator().apply(motorEncoderConfigs);
 
       
     var motorConfigs = new TalonFXConfiguration();
@@ -75,7 +77,7 @@ public class drive extends SubsystemBase {
     motorConfigs.Slot0.kA = 0;
     motorConfigs.Slot0.kP = 5;
     motorConfigs.Slot0.kI = 0;
-    motorConfigs.Slot0.kD = 0.1;
+    motorConfigs.Slot0.kD = 0;
 
     motorConfigs.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
     motorConfigs.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
@@ -86,21 +88,23 @@ public class drive extends SubsystemBase {
     motorConfigs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     motorConfigs.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
+    motorConfigs.Feedback.FeedbackRemoteSensorID = test_cancoder1.getDeviceID();
+    motorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    motorConfigs.Feedback.RotorToSensorRatio = 13;
+
     test_motor1.getConfigurator().apply(motorConfigs);
     // test_motor2.getConfigurator().apply(motorConfigs);
     // test_motor3.getConfigurator().apply(motorConfigs);
     // test_motor4.getConfigurator().apply(motorConfigs);
 
-  
-    // motorConfigs.Feedback.FeedbackRemoteSensorID = motor_encoder.getDeviceID();
-    // motorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    // motorConfigs.Feedback.RotorToSensorRatio = 13;
-
-    // test_motor1.getConfigurator().apply(motorConfigs);
-    // test_motor2.getConfigurator().apply(motorConfigs);
-    // test_motor3.getConfigurator().apply(motorConfigs);
-    // test_motor4.getConfigurator().apply(motorConfigs);
   }
+  public boolean isreach(double position, double accept_error) {
+    return Math.abs(test_motor1.getPosition().getValueAsDouble() - position) < accept_error;
+    // return Math.abs(test_motor2.getPosition().getValueAsDouble() - position) < accept_error;
+    // return Math.abs(test_motor3.getPosition().getValueAsDouble() - position) < accept_error;
+    // return Math.abs(test_motor4.getPosition().getValueAsDouble() - position) < accept_error;
+  }
+
   public Command motorCommand1(double voltage){
     return runEnd(
       () -> {
@@ -128,9 +132,9 @@ public class drive extends SubsystemBase {
     });
   }
   public Command setpositionCommand(double position){
-    return runOnce(()-> {
+    return run(()-> {
       setposition(position);
-    });
+    }).until(() -> isreach(position, 0.1));
   }
   public Command setpositionCommand2(double position){
     return runEnd(() -> {
