@@ -18,6 +18,6 @@ public final class Constants {
   }
   
   public static class Candle{
-    public static final int CANdleID = 3;
+    public static final int CANdleID = 1;
   }
 }

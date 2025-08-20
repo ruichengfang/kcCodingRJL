@@ -194,12 +194,12 @@ public class CANdleSystem extends SubsystemBase {
     }
 
     public Command setAnimateFire() {
-        return run(() -> {
-            changeAnimation(AnimationTypes.Fire);
+        return runOnce(() -> {
+            changeAnimation(AnimationTypes.Rainbow);
         });
     }
     public Command setAnimatesetall() {
-        return run(() -> {
+        return runOnce(() -> {
             changeAnimation(AnimationTypes.SetAll);
         });
     }

@@ -20,11 +20,10 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-@SuppressWarnings("unused")
 
 public class drive extends SubsystemBase {
   private final TalonFX test_motor1 = new TalonFX(11, "rio");
-  private final TalonFX test_motor2 = new TalonFX(2, "rio");
+  //private final TalonFX test_motor2 = new TalonFX(2, "rio");
   // private final TalonFX test_motor3 = new TalonFX(3, "rio");
   // private final TalonFX test_motor4 = new TalonFX(4, "rio");
   private final VoltageOut drive_request = new VoltageOut(0.0);
@@ -39,7 +38,7 @@ public class drive extends SubsystemBase {
 
   public void setVoltage1(double voltage) {
     test_motor1.setControl(drive_request.withOutput(voltage));
-    test_motor2.setControl(drive_request2.withOutput(voltage));
+   // test_motor2.setControl(drive_request2.withOutput(voltage));
   }
   public void setVoltage2(double voltage) {
     // test_motor3.setControl(drive_request3.withOutput(voltage));
@@ -69,10 +68,10 @@ public class drive extends SubsystemBase {
       
     var motorConfigs = new TalonFXConfiguration();
 
-    motorConfigs.Slot0.kS = 1.82;
+    motorConfigs.Slot0.kS = 0.14;
     motorConfigs.Slot0.kV = 0.0;
     motorConfigs.Slot0.kA = 0;
-    motorConfigs.Slot0.kP = 7;
+    motorConfigs.Slot0.kP = 5;
     motorConfigs.Slot0.kI = 0;
     motorConfigs.Slot0.kD = 0.1;
 
@@ -121,13 +120,13 @@ public class drive extends SubsystemBase {
     );
   }
   public Command motorCommand(double voltage){
-    return run(()-> {
+    return runOnce(()-> {
       setVoltage1(voltage);
       setVoltage2(voltage);
     });
   }
   public Command setpositionCommand(double position){
-    return run(()-> {
+    return runOnce(()-> {
       setposition(position);
     });
   }

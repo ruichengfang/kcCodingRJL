@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  */
 public class RobotContainer {
 
-  @SuppressWarnings("unused")
   private final drive test_drive = new drive();
   private final CANdleSystem test_candleSystem = new CANdleSystem();
 
