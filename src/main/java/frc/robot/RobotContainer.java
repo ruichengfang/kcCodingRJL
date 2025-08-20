@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.drive;
+import frc.robot.subsystems.CANdleSystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
@@ -16,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  */
 public class RobotContainer {
 
+  @SuppressWarnings("unused")
   private final drive test_drive = new drive();
+  private final CANdleSystem test_candleSystem = new CANdleSystem();
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -25,11 +28,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    m_driverController.a().whileTrue(test_drive.motorCommand1(2));
-    //m_driverController.a().whileTrue(test_drive.motorCommand2(2));
-    m_driverController.x().onTrue(test_drive.setpositionCommand(50));
-    m_driverController.y().onTrue(test_drive.setpositionCommand(100));
-    m_driverController.b().whileTrue(test_drive.setvelocityCommand(20));
+    m_driverController.a().onTrue(test_drive.setpositionCommand(50)
+        .andThen(test_candleSystem.setAnimateFire()));
+    m_driverController.b().onTrue(test_drive.setpositionCommand(0)
+        .andThen(test_candleSystem.setAnimatesetall()));
   }  
 
 }
