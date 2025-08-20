@@ -20,12 +20,14 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants;
 
+@SuppressWarnings("unused")
 public class drive extends SubsystemBase {
-  private final TalonFX test_motor1 = new TalonFX(11, "rio");
-  //private final TalonFX test_motor2 = new TalonFX(2, "rio");
-  // private final TalonFX test_motor3 = new TalonFX(3, "rio");
-  // private final TalonFX test_motor4 = new TalonFX(4, "rio");
+  private final TalonFX test_motor1 = new TalonFX(Constants.Drive.motor1ID, "rio");
+  //private final TalonFX test_motor2 = new TalonFX(Constants.Drive.motor2ID, "rio");
+  // private final TalonFX test_motor3 = new TalonFX(Constants.Drive.motor3ID, "rio");
+  // private final TalonFX test_motor4 = new TalonFX(Constants.Drive.motor4ID, "rio");
   private final VoltageOut drive_request = new VoltageOut(0.0);
   private final VoltageOut drive_request2 = new VoltageOut(0.0);
   private final VoltageOut drive_request3 = new VoltageOut(0.0);
