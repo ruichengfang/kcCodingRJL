@@ -22,19 +22,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drive extends SubsystemBase {
 
-  private final TalonFX m_test_motor = new TalonFX(1, "rio");
-  private final TalonFX m_test_motor2 = new TalonFX(2, "rio");
-  private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
-  private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
+  private final TalonFX m_test_motor = new TalonFX(5, "rio");
+  private final TalonFX m_test_motor2 = new TalonFX(6, "rio");
+  // private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
+  // private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
   private final MotionMagicVoltage m_test_motor_request = new MotionMagicVoltage(0);
+  // private final MotionMagicVoltage m_test_motor_request2 = new MotionMagicVoltage(0);
+  private final VelocityTorqueCurrentFOC m_test_motor_request2 = new VelocityTorqueCurrentFOC(0);
+  // private final VelocityTorqueCurrentFOC m_test_motor_request4 = new VelocityTorqueCurrentFOC(0);
 
-  private final CANcoder cancoder_fl = new CANcoder(1,"rio");
+  private final CANcoder cancoder_fl = new CANcoder(3,"rio");
 
 //定义预期位置
 double expected_position = 50.0;
+double expected_position2 = 0;
 
 //定义现在的位置
 double current_position = 0.0;
+double current_position2 = 50.0;
 
 double error = 1.0;
 
@@ -61,15 +66,19 @@ double error = 1.0;
     m_test_motor.setControl(m_test_motor_request.withPosition(pos));
   }
 
-  public void setmotorPosition2(double pos) {
-    m_test_motor.setControl(m_test_motor_request.withPosition(pos));
+  public void setmotorVelocity2(double vol) {
+    m_test_motor2.setControl(m_test_motor_request2.withVelocity(vol));
+
   }
 
 public boolean isAtPosition(){
   current_position = m_test_motor.getPosition().getValueAsDouble();
   return Math.abs(expected_position - current_position) <= error;
 }
-
+public boolean isAtPosition2(){
+  current_position = m_test_motor.getPosition().getValueAsDouble();
+  return Math.abs(expected_position2 - current_position) <= error;
+}
 //andThen()
 //until()
 //run()
@@ -82,18 +91,23 @@ public boolean isAtPosition(){
 //onTrue
 
 
-  public Command Motor_Position_Command(double Positon){
-    return runOnce(()->{
-                          setmotorPosition(Positon); // Set the motor to move at 1000 units per second
+  public Command Motor_Position_Command(double Positon, double Velocity){
+    return run(()->{
+                          setmotorPosition(Positon); 
+                          setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
                         }).until(()->isAtPosition());
   }
-  public Command Motor_Velocity_Command2(double Position){
-    return runEnd( ()->{
-                          setmotorPosition2(Position); // Set the motor to move at 1000 units per second
-                       },
-                  ()->{
-                          setmotorPosition2(0); // Set the motor to move at 1000 units per second
-                      });
+
+  public Command Motor_Position_Command_end(double Positon, double Velocity){
+    return run(()->{
+                          setmotorPosition(Positon); 
+                          setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
+                        }).until(()->isAtPosition2());
+  }
+  public Command Motor_Velocity_Command2(double Velocity){
+    return runOnce(()->{
+                          setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
+                       });
         }
   // public Command Motor_Voltage_Command2(double voltage){
   //   return run(()->{
@@ -102,39 +116,53 @@ public boolean isAtPosition(){
   // }
   /** Creates a new ExampleSubsystem. */
   public Drive() {
-      var motorConfigs = new TalonFXConfiguration();
+
 
       //CANcoder配置
       var motorEncoderConfigs = new CANcoderConfiguration();
       motorEncoderConfigs.MagnetSensor.MagnetOffset=0.0; //offset
       motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;//实际生活中的电机位置映射的什么范围
       motorEncoderConfigs.MagnetSensor.SensorDirection=SensorDirectionValue.Clockwise_Positive;
-      motorConfigs.Feedback.RotorToSensorRatio = 13;
+ 
       cancoder_fl.getConfigurator().apply(motorEncoderConfigs);
 
       //少了一环：电机和cancoder建立联系
 
-
-      motorConfigs.Slot0.kS = 1.4;
+      var motorConfigs = new TalonFXConfiguration();
+      motorConfigs.Slot0.kS = 0.14;
       motorConfigs.Slot0.kV = 0.0;
       motorConfigs.Slot0.kA = 0;
-      motorConfigs.Slot0.kP = 6;
+      motorConfigs.Slot0.kP = 10;
       motorConfigs.Slot0.kI = 0;
-      motorConfigs.Slot0.kD = 0.1;
+      motorConfigs.Slot0.kD = 0;
       motorConfigs.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
       motorConfigs.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
       motorConfigs.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
       motorConfigs.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
       motorConfigs.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
+     motorConfigs.Feedback.RotorToSensorRatio = 13;
+
+      var motorConfigs2 = new TalonFXConfiguration();
+      motorConfigs2.Slot0.kS = 1.85;
+      motorConfigs2.Slot0.kV = 0.0;
+      motorConfigs2.Slot0.kA = 0;
+      motorConfigs2.Slot0.kP = 6;
+      motorConfigs2.Slot0.kI = 0;
+      motorConfigs2.Slot0.kD = 0.1;
+      motorConfigs2.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
+      motorConfigs2.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
+      motorConfigs2.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
+      motorConfigs2.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
+      motorConfigs2.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
 
       //建立电机与cancoder的联系
       motorConfigs.Feedback.FeedbackRemoteSensorID = cancoder_fl.getDeviceID();
       motorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 
       m_test_motor.getConfigurator().apply(motorConfigs);
-      m_test_motor2.getConfigurator().apply(motorConfigs);
-      m_test_motor3.getConfigurator().apply(motorConfigs);
-      m_test_motor4.getConfigurator().apply(motorConfigs);
+      m_test_motor2.getConfigurator().apply(motorConfigs2);
+      // m_test_motor3.getConfigurator().apply(motorConfigs);
+      // m_test_motor4.getConfigurator().apply(motorConfigs);
 
 
   }
@@ -142,7 +170,7 @@ public boolean isAtPosition(){
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+// This method will be called once per scheduler run
   }
 
   @Override
