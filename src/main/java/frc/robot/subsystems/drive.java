@@ -40,6 +40,9 @@ public class drive extends SubsystemBase {
   private final MotionMagicVoltage position_request = new MotionMagicVoltage(0.0).withSlot(0);
   private final VelocityTorqueCurrentFOC velocity_request = new VelocityTorqueCurrentFOC(0.0);
 
+  private final int[] expectposition = {0, 10, 20};
+  private int positioni = 0;
+
   public void setVoltage1(double voltage) {
     test_motor1.setControl(drive_request.withOutput(voltage));
    // test_motor2.setControl(drive_request2.withOutput(voltage));
@@ -59,6 +62,11 @@ public class drive extends SubsystemBase {
     //test_motor2.setControl(velocity_request.withPosition(velocity));
     //test_motor3.setControl(velocity_request.withPosition(velocity));
     //test_motor4.setControl(velocity_request.withPosition(velocity));
+  }
+   
+  public void changeposition(){
+    positioni++;
+    positioni%=3;
   }
 
   public drive() {
@@ -149,6 +157,11 @@ public class drive extends SubsystemBase {
     }, () -> {
       setvelocity(0.0);
     });
+  }
+  
+  @Override
+  public void periodic() {
+    //setposition(expectposition[positioni]);
   }
 }
 /*电机参数调试：
