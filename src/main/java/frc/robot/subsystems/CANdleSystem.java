@@ -203,4 +203,8 @@ public class CANdleSystem extends SubsystemBase {
             changeAnimation(AnimationTypes.Larson);
         });
     }
+    
+    public void set1() {
+        changeAnimation(AnimationTypes.Larson);
+    }
 }

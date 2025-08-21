@@ -28,11 +28,11 @@ public class RobotContainer {
 
   private void configureBindings() {
     m_driverController.a().onTrue(test_drive.homeworkCommand(10,10)
-        .andThen(test_candleSystem.setAnimateFire())
-        .andThen(test_drive.setvelocityCommand(0)));
+        .andThen(test_candleSystem.setAnimateFire()));
+        //.andThen(test_drive.setvelocityCommand(0)));
     m_driverController.b().onTrue(test_drive.homeworkCommand(0,10)
-        .andThen(test_candleSystem.setAnimateLarson())
-        .andThen(test_drive.setvelocityCommand(0)));
+        .andThen(() -> test_candleSystem.set1()));
+        //.andThen(test_drive.setvelocityCommand(0)));
   }
 
 }

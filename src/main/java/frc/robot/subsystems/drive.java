@@ -74,7 +74,6 @@ public class drive extends SubsystemBase {
     motorEncoderConfigs.MagnetSensor.MagnetOffset=0.0;//offset
     motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;//电机180°对应范围
     motorEncoderConfigs.MagnetSensor.SensorDirection=SensorDirectionValue.Clockwise_Positive;
-
     test_cancoder1.getConfigurator().apply(motorEncoderConfigs);
 
       
@@ -114,9 +113,14 @@ public class drive extends SubsystemBase {
     motorConfigs2.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
     test_motor2.getConfigurator().apply(motorConfigs2);
-    // test_motor3.getConfigurator().apply(motorConfig  s);
-    // test_motor4.getConfigurator().apply(motorConfigs);
 
+  }
+
+  public double getposition(){
+    return test_motor1.getPosition().getValueAsDouble();
+    // return test_motor2.getPosition().getValueAsDouble();
+    // return test_motor3.getPosition().getValueAsDouble();
+    // return test_motor4.getPosition().getValueAsDouble();
   }
   public boolean isreach(double position, double accept_error) {
     return Math.abs(test_motor1.getPosition().getValueAsDouble() - position) < accept_error;
@@ -156,7 +160,11 @@ public class drive extends SubsystemBase {
     return run(()-> {
       setposition(position);
       setvelocity(velocity);
-    }).until(() -> isreach(position, 0.1));
+    }).until(() -> isreach(position, 0.1))
+    .finallyDo( () -> {
+      setvelocity(0.0);
+      setposition(getposition());
+    });
   }
 
   public Command setpositionCommand2(double position){
