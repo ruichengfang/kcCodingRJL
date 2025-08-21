@@ -90,20 +90,21 @@ public boolean isAtPosition2(){
 //whileTrue
 //onTrue
 
-
+//控制速度与角度的方法，到达50度后停止
   public Command Motor_Position_Command(double Positon, double Velocity){
     return run(()->{
                           setmotorPosition(Positon); 
                           setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
                         }).until(()->isAtPosition());
   }
-
+//控制速度与角度的方法，到达0度后停止
   public Command Motor_Position_Command_end(double Positon, double Velocity){
     return run(()->{
                           setmotorPosition(Positon); 
                           setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
                         }).until(()->isAtPosition2());
   }
+  //单独控制速度的方法
   public Command Motor_Velocity_Command2(double Velocity){
     return runOnce(()->{
                           setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
@@ -128,6 +129,8 @@ public boolean isAtPosition2(){
 
       //少了一环：电机和cancoder建立联系
 
+
+      //配置第一个电机
       var motorConfigs = new TalonFXConfiguration();
       motorConfigs.Slot0.kS = 0.14;
       motorConfigs.Slot0.kV = 0.0;
@@ -142,6 +145,7 @@ public boolean isAtPosition2(){
       motorConfigs.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
      motorConfigs.Feedback.RotorToSensorRatio = 13;
 
+      //配置第二个电机 
       var motorConfigs2 = new TalonFXConfiguration();
       motorConfigs2.Slot0.kS = 1.85;
       motorConfigs2.Slot0.kV = 0.0;
