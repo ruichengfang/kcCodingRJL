@@ -152,10 +152,10 @@ public class drive extends SubsystemBase {
     });
   }
 
-  public Command homeworkCommand(double position){
+  public Command homeworkCommand(double position, double velocity){
     return run(()-> {
       setposition(position);
-      setvelocity(10);
+      setvelocity(velocity);
     }).until(() -> isreach(position, 0.1));
   }
 
