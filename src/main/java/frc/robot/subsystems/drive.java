@@ -18,12 +18,14 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants;
+
 //基类
 
 public class Drive extends SubsystemBase {
 
-  private final TalonFX m_test_motor = new TalonFX(5, "rio");
-  private final TalonFX m_test_motor2 = new TalonFX(6, "rio");
+  private final TalonFX m_test_motor = new TalonFX(Constants.Drive.Motor1_ID, "rio");
+  private final TalonFX m_test_motor2 = new TalonFX(Constants.Drive.Motor2_ID, "rio");
   // private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
   // private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
   private final MotionMagicVoltage m_test_motor_request = new MotionMagicVoltage(0);
@@ -31,17 +33,16 @@ public class Drive extends SubsystemBase {
   private final VelocityTorqueCurrentFOC m_test_motor_request2 = new VelocityTorqueCurrentFOC(0);
   // private final VelocityTorqueCurrentFOC m_test_motor_request4 = new VelocityTorqueCurrentFOC(0);
 
-  private final CANcoder cancoder_fl = new CANcoder(3,"rio");
+  private final CANcoder cancoder_fl = new CANcoder(Constants.Drive.Encoder_ID,"rio");
 
-//定义预期位置
-double expected_position = 50.0;
-double expected_position2 = 0;
+// //定义预期位置
+// double expected_position = 50.0;
+// double expected_position2 = 0;
 
-//定义现在的位置
-double current_position = 0.0;
-double current_position2 = 50.0;
+// //定义现在的位置
+// double current_position = 0.0;
 
-double error = 1.0;
+// double error = 1.0;
 
 //如何判断电机到达位置
 //if(电机位置==多少){
@@ -71,19 +72,72 @@ double error = 1.0;
 
   }
 
+  public Drive() {
+
+
+    //CANcoder配置
+    var motorEncoderConfigs = new CANcoderConfiguration();
+    motorEncoderConfigs.MagnetSensor.MagnetOffset=0.0; //offset
+    motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;//实际生活中的电机位置映射的什么范围
+    motorEncoderConfigs.MagnetSensor.SensorDirection=SensorDirectionValue.Clockwise_Positive;
+
+    cancoder_fl.getConfigurator().apply(motorEncoderConfigs);
+
+    //电机1配置
+    var motorConfigs = new TalonFXConfiguration();
+    motorConfigs.Slot0.kS = 0.14;
+    motorConfigs.Slot0.kV = 0.0;
+    motorConfigs.Slot0.kA = 0;
+    motorConfigs.Slot0.kP = 10;
+    motorConfigs.Slot0.kI = 0;
+    motorConfigs.Slot0.kD = 0;
+    motorConfigs.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
+    motorConfigs.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
+    motorConfigs.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
+    motorConfigs.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
+    motorConfigs.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
+
+    //建立电机与cancoder的联系
+    motorConfigs.Feedback.FeedbackRemoteSensorID = cancoder_fl.getDeviceID();
+    motorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    motorConfigs.Feedback.RotorToSensorRatio = 2.5;
+
+    m_test_motor.getConfigurator().apply(motorConfigs);
+
+    //电机2配置
+    var motorConfigs2 = new TalonFXConfiguration();
+    motorConfigs2.Slot0.kS = 1.85;
+    motorConfigs2.Slot0.kV = 0.0;
+    motorConfigs2.Slot0.kA = 0;
+    motorConfigs2.Slot0.kP = 6;
+    motorConfigs2.Slot0.kI = 0;
+    motorConfigs2.Slot0.kD = 0.1;
+    motorConfigs2.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
+    motorConfigs2.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
+    motorConfigs2.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
+    motorConfigs2.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
+    motorConfigs2.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
+    m_test_motor2.getConfigurator().apply(motorConfigs2);
+
+
+}
+
+
 public boolean isAtPosition(){
-  current_position = m_test_motor.getPosition().getValueAsDouble();
-  return Math.abs(expected_position - current_position) <= error;
+  Constants.Drive.current_position = m_test_motor.getPosition().getValueAsDouble();
+  return Math.abs(Constants.Drive.Motor_Position1 - Constants.Drive.current_position) <= Constants.Drive.error;
 }
 public boolean isAtPosition2(){
-  current_position = m_test_motor.getPosition().getValueAsDouble();
-  return Math.abs(expected_position2 - current_position) <= error;
+  Constants.Drive.current_position = m_test_motor.getPosition().getValueAsDouble();
+  return Math.abs(Constants.Drive.Motor_Position2 - Constants.Drive.current_position) <= Constants.Drive.error;
 }
+
 //andThen()
 //until()
 //run()
 //runOnce()
 //runEnd()
+//finallyDo()
 
 //小的command组合成大的command
 
@@ -95,14 +149,24 @@ public boolean isAtPosition2(){
     return run(()->{
                           setmotorPosition(Positon); 
                           setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
-                        }).until(()->isAtPosition());
+                        })
+                          .until(()->isAtPosition())
+                          .finallyDo(()->{
+                            setmotorVelocity2(0);
+                            setmotorPosition(Constants.Drive.current_position);
+                        });
   }
 //控制速度与角度的方法，到达0度后停止
   public Command Motor_Position_Command_end(double Positon, double Velocity){
     return run(()->{
                           setmotorPosition(Positon); 
                           setmotorVelocity2(Velocity); // Set the motor to move at 1000 units per second
-                        }).until(()->isAtPosition2());
+                        })
+                          .until(()->isAtPosition2())
+                          .finallyDo(()->{
+                            setmotorVelocity2(0);
+                            setmotorPosition(Constants.Drive.current_position);
+                        });
   }
   //单独控制速度的方法
   public Command Motor_Velocity_Command2(double Velocity){
@@ -116,60 +180,6 @@ public boolean isAtPosition2(){
   //   });
   // }
   /** Creates a new ExampleSubsystem. */
-  public Drive() {
-
-
-      //CANcoder配置
-      var motorEncoderConfigs = new CANcoderConfiguration();
-      motorEncoderConfigs.MagnetSensor.MagnetOffset=0.0; //offset
-      motorEncoderConfigs.MagnetSensor.AbsoluteSensorDiscontinuityPoint=0.5;//实际生活中的电机位置映射的什么范围
-      motorEncoderConfigs.MagnetSensor.SensorDirection=SensorDirectionValue.Clockwise_Positive;
- 
-      cancoder_fl.getConfigurator().apply(motorEncoderConfigs);
-
-      //少了一环：电机和cancoder建立联系
-
-
-      //配置第一个电机
-      var motorConfigs = new TalonFXConfiguration();
-      motorConfigs.Slot0.kS = 0.14;
-      motorConfigs.Slot0.kV = 0.0;
-      motorConfigs.Slot0.kA = 0;
-      motorConfigs.Slot0.kP = 10;
-      motorConfigs.Slot0.kI = 0;
-      motorConfigs.Slot0.kD = 0;
-      motorConfigs.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
-      motorConfigs.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
-      motorConfigs.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
-      motorConfigs.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
-      motorConfigs.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
-     motorConfigs.Feedback.RotorToSensorRatio = 13;
-
-      //配置第二个电机 
-      var motorConfigs2 = new TalonFXConfiguration();
-      motorConfigs2.Slot0.kS = 1.85;
-      motorConfigs2.Slot0.kV = 0.0;
-      motorConfigs2.Slot0.kA = 0;
-      motorConfigs2.Slot0.kP = 6;
-      motorConfigs2.Slot0.kI = 0;
-      motorConfigs2.Slot0.kD = 0.1;
-      motorConfigs2.MotionMagic.MotionMagicAcceleration = 100; // Acceleration is around 40 rps/s
-      motorConfigs2.MotionMagic.MotionMagicCruiseVelocity = 200; // Unlimited cruise velocity
-      motorConfigs2.MotionMagic.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
-      motorConfigs2.MotionMagic.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
-      motorConfigs2.MotionMagic.MotionMagicJerk = 0; // Jerk is around 0
-
-      //建立电机与cancoder的联系
-      motorConfigs.Feedback.FeedbackRemoteSensorID = cancoder_fl.getDeviceID();
-      motorConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-
-      m_test_motor.getConfigurator().apply(motorConfigs);
-      m_test_motor2.getConfigurator().apply(motorConfigs2);
-      // m_test_motor3.getConfigurator().apply(motorConfigs);
-      // m_test_motor4.getConfigurator().apply(motorConfigs);
-
-
-  }
 
 
   @Override
@@ -219,3 +229,11 @@ public boolean isAtPosition2(){
 
 //每时每刻都在运动，能不能运行一次就结束？  X
 //保持机器人时刻都在运动，所以periodic()
+
+
+
+//git多分支切换可能遇到的问题：
+//your local changes should be overwritten by checkout
+//当前分支没有提交过的更改，如果直接切换到其他分支，而没有对这些更改进行保存
+//就会报错
+//暂时保存运行我们的更改

@@ -58,14 +58,12 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     //Move点击以10的速度旋转，Steering电机转到50后，Move电机停止并且开始亮灯
-    m_driverController.b().onTrue(m_driveSubsystem.Motor_Position_Command(50,10)
-    .andThen(m_driveSubsystem.Motor_Velocity_Command2(0))
-    .andThen(m_CaNdleSystem.setFireWithMotorCommand()));
+    m_driverController.b().onTrue(m_driveSubsystem.Motor_Position_Command(Constants.Drive.Motor_Position1,Constants.Drive.Motor_Velocity1)
+                          .andThen(m_CaNdleSystem.setFireWithMotorCommand()));
 
     //Move点击以-10的速度旋转，Steering电机转到0后，Move电机停止并且关灯
-    m_driverController.a().onTrue(m_driveSubsystem.Motor_Position_Command_end(0,-10)
-    .andThen(m_driveSubsystem.Motor_Velocity_Command2(0))
-    .andThen(m_CaNdleSystem.setOffWithMotorCommand()));
+    m_driverController.a().onTrue(m_driveSubsystem.Motor_Position_Command_end(Constants.Drive.Motor_Position2,Constants.Drive.Motor_Velocity2)
+                          .andThen(m_CaNdleSystem.setOffWithMotorCommand()));
     // m_driverController.x().whileTrue(m_driveSubsystem.Motor_Velocity_Command2(10));
 
     // m_driverController.a().onTrue(m_driveSubsystem.Motor_Position_Command(10));

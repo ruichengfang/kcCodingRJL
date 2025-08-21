@@ -21,4 +21,22 @@ public final class Constants {
     public static final int CANdleID = 2;
     
   }
+  public static class Drive {
+    public static final int Motor1_ID = 5;
+    public static final int Motor2_ID = 6;
+    public static final int Encoder_ID = 2;
+
+    //定义预期位置
+    public static final double Motor_Position1 = 50;
+    public static final double Motor_Position2 = 0;
+
+    public static final double Motor_Velocity1 = 10;
+    public static final double Motor_Velocity2 = -10;
+
+    public static double current_position = 0.0;
+    public static double error = 1.0;
+  }
+
 }
+
+
