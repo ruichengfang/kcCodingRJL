@@ -16,4 +16,16 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  
+  public static class Candle{
+    public static final int CANdleID = 1;
+  }
+  
+  public static class Drive{
+    public static final int motor1ID = 1;
+    public static final int motor2ID = 2;
+    public static final int motor3ID = 1;
+    public static final int motor4ID = 1;
+    public static final int cancoder1ID = 1;
+  }
 }

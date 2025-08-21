@@ -6,9 +6,8 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.drive;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.CANdleSystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 
   private final drive test_drive = new drive();
+  private final CANdleSystem test_candleSystem = new CANdleSystem();
 
   private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -27,10 +27,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    m_driverController.a().whileTrue(test_drive.motorCommand1(2));
-    //m_driverController.a().whileTrue(test_drive.motorCommand2(2));
-    m_driverController.x().onTrue(test_drive.motorCommand(2));
-    m_driverController.y().onTrue(test_drive.motorCommand(0));
-  }  
+    m_driverController.a().onTrue(test_drive.homeworkCommand(10,10)
+        .andThen(test_candleSystem.setAnimateFire()));
+        //.andThen(test_drive.setvelocityCommand(0)));
+    m_driverController.b().onTrue(test_drive.homeworkCommand(0,10)
+        .andThen(test_candleSystem.setAnimateLarson()));
+        //.andThen(test_drive.setvelocityCommand(0)));
+  }
 
 }
