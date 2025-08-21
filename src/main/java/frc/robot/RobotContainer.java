@@ -90,13 +90,11 @@ public class RobotContainer {
     m_driverController.b().onTrue(
       m_ExampleDriveSystem.motorB_Velocity_Command(10)
       .andThen(m_ExampleDriveSystem.cmd_motor1Command(50))
-      .andThen(m_ExampleDriveSystem.motorB_Velocity_Command(0))
       .andThen(m_Candle.changeAnimation1(CANdleSystem.AnimationTypes.Rainbow))
       );
 
     m_driverController.x().onTrue(m_ExampleDriveSystem.motorB_Velocity_Command(10)
       .andThen(m_ExampleDriveSystem.cmd_motor1Command(0))
-      .andThen(m_ExampleDriveSystem.motorB_Velocity_Command(0))
       .andThen(m_Candle.changeAnimation1(CANdleSystem.AnimationTypes.RgbFade))
       );
       

@@ -26,6 +26,8 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.Constants;
+
 //基类：基础的类型
 //构造函数来初始化子系统 读取电机固定参数
 
@@ -33,16 +35,16 @@ public class drive extends SubsystemBase {
 
   // 控制
   //父子类
-  private final TalonFX m_test_motor1 = new TalonFX(5, "rio");
-  private final TalonFX m_test_motor2 = new TalonFX(6, "rio");
+  private final TalonFX m_test_motor1 = new TalonFX(Constants.drive.motor1ID, "rio");
+  private final TalonFX m_test_motor2 = new TalonFX(Constants.drive.motor2ID, "rio");
 
-  private final TalonFX m_test_motor3 = new TalonFX(3, "rio");
-  private final TalonFX m_test_motor4 = new TalonFX(4, "rio");
+  private final TalonFX m_test_motor3 = new TalonFX(Constants.drive.motor3ID, "rio");
+  private final TalonFX m_test_motor4 = new TalonFX(Constants.drive.motor4ID, "rio");
   //控制请求
   private final MotionMagicVoltage m_test_motor1_request = new MotionMagicVoltage(0.0);
   private final VelocityTorqueCurrentFOC m_test_motor2_request = new VelocityTorqueCurrentFOC(0.0);
 
-  private final CANcoder m_motor_CANcoderFL = new CANcoder(3, "rio");
+  private final CANcoder m_motor_CANcoderFL = new CANcoder(Constants.drive.motor1CANCoderID, "rio");
 
     // 期望位置
   double Current_position = 0.0; // 当前实际位置
@@ -59,8 +61,20 @@ public class drive extends SubsystemBase {
       ()->{
       m_test_motor1.setControl(m_test_motor1_request.withPosition(Position));
     })
-    .until(() -> isAtPosition(Position));
+    .until(() -> isAtPosition(Position))
+    .finallyDo(()->motorB_Velocity_Command(0));
   }
+
+ public Command cmd_motor2Command(double Velocity){
+    return run(
+      ()->{
+      m_test_motor2.setControl(m_test_motor2_request.withVelocity(Velocity));
+    })
+    .until(() -> isAtVelocity());
+    
+  }
+
+
 
   public double getMotorPosition() {
     // 获取当前电机位置
@@ -71,14 +85,6 @@ public class drive extends SubsystemBase {
     Current_position = m_test_motor1.getPosition().getValueAsDouble();
 
     return (Math.abs(Current_position - 10) <= accepted_error);
-  }
-  
-  public Command cmd_motor2Command(double Velocity){
-    return run(
-      ()->{
-      m_test_motor2.setControl(m_test_motor2_request.withVelocity(Velocity));
-    })
-    .until(() -> isAtVelocity());
   }
 
   public double getMotorVelocity() {

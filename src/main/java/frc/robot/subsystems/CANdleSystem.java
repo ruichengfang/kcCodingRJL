@@ -36,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class CANdleSystem extends SubsystemBase {
-    private final CANdle m_candle = new CANdle(3, "rio");
+    private final CANdle m_candle = new CANdle(Constants.CANdleSystem.candle1ID, "rio");
     private final int LedCount = 300;//设的比较小会导致灯带只走一半
 
     private Animation m_toAnimate = null;//下面要用的动画

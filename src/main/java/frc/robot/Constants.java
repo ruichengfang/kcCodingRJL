@@ -16,4 +16,24 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class CANdleConstants {
+    public static final int kCANdleID = 1;
+    public static final int kLength = 60; //灯条长度
+  }
+
+  public static class drive {
+    public static final int motor1ID = 5;
+    public static final int motor2ID = 5;
+    public static final int motor3ID = 5;
+    public static final int motor4ID = 5;
+
+    public static final int motor1CANCoderID = 3;
+    
+  }
+
+  public static class CANdleSystem {
+    public static final int candle1ID = 5;
+  }
 }
+
